@@ -1,0 +1,12 @@
+**/node_modules
+**/.venv
+**/__pycache__
+**/*.pyc
+**/.DS_Store
+web/dist
+data
+server/data
+*.png
+*.jpg
+.env
+.git

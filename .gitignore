@@ -46,3 +46,13 @@ checkpoints/
 
 # Ignore generated sample .wav files
 **/*.wav
+
+# Estúdio de Voz (app web)
+!web/src/lib/
+node_modules/
+.venv/
+web/dist/
+data/
+server/data/
+.env
+.DS_Store

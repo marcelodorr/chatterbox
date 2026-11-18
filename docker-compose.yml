@@ -1,0 +1,61 @@
+# Deploy no Dokploy (Compose) ou em qualquer servidor com Docker.
+# No Dokploy: crie um serviço "Compose" apontando para este repositório, defina as
+# variáveis de ambiente (veja .env.example) e associe o domínio ao serviço "api", porta 8000.
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    restart: unless-stopped
+    environment:
+      APP_NAME: ${APP_NAME:-Estúdio de Voz}
+      PUBLIC_URL: ${PUBLIC_URL:?defina PUBLIC_URL, ex. https://voz.seudominio.com}
+      SECRET_KEY: ${SECRET_KEY:?defina SECRET_KEY}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+      ALLOW_SIGNUP: ${ALLOW_SIGNUP:-false}
+      INFERENCE_URL: ${INFERENCE_URL:-http://inference:8001}
+      INFERENCE_TOKEN: ${INFERENCE_TOKEN:?defina INFERENCE_TOKEN}
+      MAX_TEXT_CHARS: ${MAX_TEXT_CHARS:-5000}
+      OAUTH_ALLOWED_REDIRECT_HOSTS: ${OAUTH_ALLOWED_REDIRECT_HOSTS:-}
+    volumes:
+      - api-data:/data
+    expose:
+      - "8000"
+    depends_on:
+      - inference
+
+  inference:
+    build:
+      context: .
+      dockerfile: inference/Dockerfile
+      args:
+        # Para GPU NVIDIA: https://download.pytorch.org/whl/cu124
+        TORCH_INDEX: ${TORCH_INDEX:-https://download.pytorch.org/whl/cpu}
+    restart: unless-stopped
+    environment:
+      INFERENCE_TOKEN: ${INFERENCE_TOKEN}
+      ENABLED_MODELS: ${ENABLED_MODELS:-mtl-v3,pt-br,nano}
+      DEFAULT_MODEL: ${DEFAULT_MODEL:-mtl-v3}
+      PRELOAD_MODELS: ${PRELOAD_MODELS:-mtl-v3}
+      MAX_LOADED_MODELS: ${MAX_LOADED_MODELS:-1}
+      TORCH_NUM_THREADS: ${TORCH_NUM_THREADS:-}
+      HF_TOKEN: ${HF_TOKEN:-}
+    volumes:
+      - models:/models
+    # Sem porta pública: só a API acessa o serviço de inferência.
+    expose:
+      - "8001"
+    # Descomente para GPU (requer nvidia-container-toolkit no host):
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
+
+volumes:
+  api-data:
+  models:

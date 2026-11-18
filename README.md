@@ -1,3 +1,5 @@
+> **Estúdio de Voz:** este fork inclui uma interface web, API e servidor MCP (OAuth) para Claude/ChatGPT. Veja [ESTUDIO.md](ESTUDIO.md).
+
 ![Chatterbox Multilingual Image](./Chatterbox-Multilingual.png)
 
 
