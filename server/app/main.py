@@ -44,6 +44,12 @@ async def security_headers(request: Request, call_next):
 
 @app.get("/healthz")
 async def healthz():
+    # Liveness: não depende do motor de voz (o Traefik ignora containers "unhealthy").
+    return {"status": "ok"}
+
+
+@app.get("/api/status")
+async def status():
     models = await inference.get_models()
     return {"status": "ok", "inference_online": models.get("online", False)}
 

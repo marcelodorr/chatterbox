@@ -29,7 +29,7 @@ USER app
 VOLUME ["/data"]
 EXPOSE 8000
 
-HEALTHCHECK --interval=30s --timeout=5s --start-period=20s CMD curl -fsS http://127.0.0.1:8000/healthz || exit 1
+HEALTHCHECK --interval=15s --timeout=5s --start-period=10s CMD curl -fsS http://127.0.0.1:8000/healthz || exit 1
 
 # Um único worker: a fila de geração roda dentro do processo.
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1", "--proxy-headers", "--forwarded-allow-ips", "*"]
